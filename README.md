@@ -6,35 +6,34 @@ Este proyecto corresponde a una prueba técnica avanzada para el cargo de analis
 
 ## 📁 Estructura del Proyecto
 
-```
-
+```bash
 project-root/
 ├── data/
 │   ├── raw/              # Datos originales (Excel .xlsx)
 │   ├── processed/        # Tabla analítica procesada (CSV listo para análisis)
 ├── notebooks/
-│   ├── 01\_etl\_preparacion.ipynb   # Construcción de tabla consolidada desde fuentes crudas
-│   └── 02\_analisis\_modelo.ipynb   # Análisis exploratorio, visualización y modelado
-├── outputs/              # Gráficos, reportes PDF, screenshots de dashboard
+│   ├── 01_etl_preparacion.ipynb   # Construcción de tabla consolidada desde fuentes crudas
+│   └── 02_analisis_modelo.ipynb   # Análisis exploratorio, visualización y modelado
+├── output/               # Gráficos, reportes PDF, screenshots de dashboard
 ├── models/               # Modelos predictivos entrenados (formato .pkl)
 └── README.md             # Documentación general
-
-````
+```
 
 ---
 
 ## ⚙️ Requisitos
 
-Este proyecto fue desarrollado en Python 3.11 y usa las siguientes bibliotecas principales:
+Este proyecto fue desarrollado en Python 3.11 y utiliza las siguientes bibliotecas principales:
 
 ```bash
 pandas
 numpy
-matplotlib / seaborn
+matplotlib
+seaborn
 scikit-learn
 xgboost
 openpyxl
-````
+```
 
 Puedes instalar los requerimientos con:
 
@@ -48,52 +47,82 @@ pip install -r requirements.txt
 
 ### 1. ETL y Preparación
 
-* Limpieza y tipado de datos desde Excel (`/data/raw/`)
-* Generación de una tabla analítica diaria por `producto-sucursal-fecha`
-* Cálculo de métricas como:
+* Lectura y tipado de datos desde archivo Excel (`/data/raw/`)
+* Limpieza y consolidación en una única tabla analítica diaria a nivel `producto–sucursal–fecha`
+* Uso de `category` y `datetime64` para eficiencia de memoria
+* Cálculo de columnas derivadas:
 
   * Margen bruto (`precio_venta - costo_unitario`)
-  * Flag de producto en promoción
-  * Consolidación de compras y ventas
+  * Indicador binario de si el producto estuvo en promoción
+* Exportación final como `.csv` en `data/processed/tabla_consolidada.csv`
 
-#### 🔍 Nota sobre "Días de Inventario Estimado"
+#### ❌ Exclusión justificada: Días de Inventario Estimado
 
-El cálculo de esta métrica fue **intencionalmente descartado**, pese a estar planteada en el enunciado de la prueba, debido a la naturaleza de los datos disponibles. La baja densidad de registros (solo \~100 compras y \~100 ventas distribuidas en un rango de más de 800 días) hace inviable una estimación confiable y representativa.
+El cálculo fue **descartado intencionalmente**. La base de datos tiene muy baja densidad temporal (\~100 compras y \~100 ventas distribuidas en más de 800 días), lo que hace inviable una estimación confiable. Cualquier intento generaría valores sin significado estadístico o divisiones por cero.
 
-Incluir este indicador en este contexto introduciría ruido estadístico y visual, generando valores artificialmente altos, divisiones por cero y sin interpretación operativa válida.
+Esta decisión refleja criterio técnico, evitando forzar métricas que no están respaldadas por los datos disponibles.
 
-Esta decisión se alinea con buenas prácticas analíticas y refleja un criterio profesional al evitar métricas irrelevantes cuando los datos no las sustentan.
+---
 
 ### 2. Análisis Estratégico
 
-* Identificación de productos de alta rotación
-* Detección de rupturas de inventario (ventas = 0 con demanda histórica)
-* Evaluación de proveedores problemáticos (plazo y precio)
+#### 🔹 Productos de Alta Rotación
+
+* Se identificaron los **top 10 productos más vendidos por sucursal** durante el último semestre.
+* Se evidenció una alta rotación de productos en las categorías **Lácteos** y **Bebidas**, lo cual sugiere líneas prioritarias para abastecimiento y renegociación.
+
+#### 🔹 Proveedores Problemáticos
+
+* Se analizaron métricas como **plazo de entrega** y **calificación** por proveedor.
+* En lugar de umbrales fijos, se aplicaron métodos estadísticos (z-score e IQR) para identificar outliers negativos de forma robusta.
+* El proveedor **V010** fue marcado como riesgo potencial por su **plazo de entrega inusualmente alto**, aunque su calificación es buena.
+* No se identificaron proveedores con riesgo conjunto (mala calificación y mal plazo).
+
+#### ❌ Exclusión justificada: Rupturas de Inventario
+
+Aunque el enunciado sugiere detectar días con ventas nulas y demanda esperada, esta sección fue excluida tras análisis detallado:
+
+* El volumen de datos es muy bajo (\~100 ventas en 800 días).
+* La mayoría de productos tienen muy pocos días con actividad de venta, lo que impide establecer patrones de demanda confiables.
+* La inclusión de este análisis introduciría falsos positivos sin sustento real.
+
+Evitarlo preserva la calidad del análisis y refleja una aplicación profesional del criterio analítico.
+
+---
 
 ### 3. Visualización
 
-* Dashboard dinámico en Power BI  
-* Ranking de productos más rentables vs más vendidos
-* Alertas por categoría y quiebres
+* Se desarrollará un dashboard dinámico (Power BI o Python) con:
+
+  * Evolución del margen por categoría
+  * Ranking de productos más vendidos vs. rentables
+  * Panel de monitoreo para proveedores y riesgo operativo
+
+---
 
 ### 4. Modelado Predictivo
 
-* Predicción de demanda semanal para productos clave
-* Integración de variables como promociones, historial y comportamiento por sucursal
-* Evaluación con MAE / RMSE
-* Exportación de modelo y recomendaciones para ajustar compras
+* Entrenamiento de un modelo de regresión para **predecir demanda semanal** de productos clave
+* Incorporación de variables como:
+
+  * Historial de ventas
+  * Días de la semana
+  * Promociones activas
+  * Ubicación de la sucursal
+* Evaluación con **MAE y RMSE**
+* Recomendaciones para ajustar niveles de compra y negociar cantidades óptimas
 
 ---
 
 ## 📌 Notas Técnicas
 
-* Todos los archivos `.csv` procesados son generados desde notebooks. No deben editarse manualmente.
-* La tabla final se guarda en `data/processed/tabla_consolidada.csv`.
-* El uso de `category` y `parse_dates` está optimizado para eficiencia de memoria.
+* Todos los `.csv` procesados son generados automáticamente desde notebooks.
+* No se deben modificar manualmente.
+* Se implementó uso de `category` para columnas categóricas y `parse_dates` para columnas de fechas, con el objetivo de optimizar consumo de memoria y velocidad de procesamiento.
 
 ---
 
 ## 🧠 Autor
 
-**Pablo Alejandro López Sánchez**  
-Data Analyst - Business Analyst
+**Pablo Alejandro López Sánchez**
+Data Analyst – Business Analyst
