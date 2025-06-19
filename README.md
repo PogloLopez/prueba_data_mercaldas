@@ -9,14 +9,20 @@ Este proyecto corresponde a una prueba técnica avanzada para el cargo de analis
 ```bash
 project-root/
 ├── data/
-│   ├── raw/              # Datos originales (Excel .xlsx)
-│   ├── processed/        # Tabla analítica procesada (CSV listo para análisis)
+│   ├── raw/                       # Datos originales (Excel .xlsx)
+│   └── processed/                 # Tabla analítica procesada (CSV listo para análisis)
+├── dashboard/
+│   └── mercaldas_analytics.pbix   # Dashboard interactivo en Power BI
 ├── notebooks/
-│   ├── 01_etl_preparacion.ipynb   # Construcción de tabla consolidada desde fuentes crudas
-│   └── 02_analisis_modelo.ipynb   # Análisis exploratorio, visualización y modelado
-├── output/               # Gráficos, reportes PDF, screenshots de dashboard
-├── models/               # Modelos predictivos entrenados (formato .pkl)
-└── README.md             # Documentación general
+│   ├── 01_etl.ipynb               # Construcción de tabla consolidada desde fuentes crudas
+│   ├── 02_analisis_modelo.ipynb   # Análisis exploratorio, visualización y modelado
+│   └── 03_modelo_predictivo.ipynb # Análisis exploratorio, visualización y modelado
+├── src/                           # Código fuente de funciones y clases reutilizables
+│   └── data_loader.py             # Módulo para cargar datos (ej. la función cargar_datos_ventas)
+├── output/                        # Gráficos, reportes PDF, screenshots de dashboard
+├── models/                        # Modelos predictivos entrenados (formato .pkl)
+├── requirements.txt               # Librerias requeridas para usar este repositorio
+└── README.md                      # Documentación general
 ```
 
 ---
@@ -66,12 +72,12 @@ Esta decisión refleja criterio técnico, evitando forzar métricas que no está
 
 ### 2. Análisis Estratégico
 
-#### 🔹 Productos de Alta Rotación
+####  Productos de Alta Rotación
 
 * Se identificaron los **top 10 productos más vendidos por sucursal** durante el último semestre.
 * Se evidenció una alta rotación de productos en las categorías **Lácteos** y **Bebidas**, lo cual sugiere líneas prioritarias para abastecimiento y renegociación.
 
-#### 🔹 Proveedores Problemáticos
+####  Proveedores Problemáticos
 
 * Se analizaron métricas como **plazo de entrega** y **calificación** por proveedor.
 * En lugar de umbrales fijos, se aplicaron métodos estadísticos (z-score e IQR) para identificar outliers negativos de forma robusta.
@@ -90,14 +96,35 @@ Evitarlo preserva la calidad del análisis y refleja una aplicación profesional
 
 ---
 
-### 3. Visualización
+### 3. Dashboard interactivo – Power BI
 
-* Se desarrollará un dashboard dinámico (Power BI o Python) con:
+El archivo `dashboard/mercaldas_analytics.pbix` contiene un dashboard interactivo construido con Power BI, utilizando como insumo principal la tabla consolidada (`tabla_consolidada.csv`).
 
-  * Evolución del margen por categoría
-  * Ranking de productos más vendidos vs. rentables
-  * Panel de monitoreo para proveedores y riesgo operativo
+El dashboard incluye:
 
+1. **Evolución del margen bruto por categoría**
+
+   * Visualizado en cuatro gráficos de líneas, uno por categoría.
+   * Cada gráfico incluye una línea de tendencia para facilitar la interpretación del comportamiento en el tiempo.
+
+2. **Relación entre margen bruto y unidades vendidas**
+
+   * Representada mediante un scatterplot, útil para identificar productos con alto volumen y bajo margen, o viceversa.
+
+3. **Top productos más vendidos por sucursal**
+
+   * Mostrado como gráfico de barras horizontales apiladas, lo que permite comparar fácilmente las preferencias por sucursal.
+
+4. **Tabla de evaluación de proveedores**
+
+   * Incluye nombre, calificación y plazo de entrega de cada proveedor (excluye columnas técnicas como z-scores).
+   * Útil para identificar proveedores estratégicos o con potencial de revisión.
+
+5. **Filtros dinámicos**
+
+   * Se incorporaron slicers para categoría de producto, sucursal y rango de fechas, permitiendo segmentaciones interactivas por el usuario final.
+
+![Dashboard analítica Mercaldas](output/dashboard.png)
 ---
 
 ### 4. Modelado Predictivo
@@ -124,5 +151,5 @@ Evitarlo preserva la calidad del análisis y refleja una aplicación profesional
 
 ## 🧠 Autor
 
-**Pablo Alejandro López Sánchez**
+**Pablo Alejandro López Sánchez**  
 Data Analyst – Business Analyst
