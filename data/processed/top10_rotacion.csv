@@ -1,0 +1,20 @@
+sucursal,producto_id,unidades_vendidas,nombre_producto,categoria
+Sucursal Este,P009,43,Producto 9,Lácteos
+Sucursal Este,P020,41,Producto 20,Limpieza
+Sucursal Este,P019,19,Producto 19,Lácteos
+Sucursal Este,P007,5,Producto 7,Bebidas
+Sucursal Este,P015,3,Producto 15,Bebidas
+Sucursal Norte,P003,46,Producto 3,Limpieza
+Sucursal Norte,P013,41,Producto 13,Snacks
+Sucursal Norte,P017,35,Producto 17,Lácteos
+Sucursal Norte,P007,31,Producto 7,Bebidas
+Sucursal Norte,P001,29,Producto 1,Bebidas
+Sucursal Oeste,P011,56,Producto 11,Bebidas
+Sucursal Oeste,P003,48,Producto 3,Limpieza
+Sucursal Oeste,P017,40,Producto 17,Lácteos
+Sucursal Oeste,P008,17,Producto 8,Bebidas
+Sucursal Oeste,P004,1,Producto 4,Snacks
+Sucursal Sur,P009,42,Producto 9,Lácteos
+Sucursal Sur,P016,28,Producto 16,Snacks
+Sucursal Sur,P002,24,Producto 2,Bebidas
+Sucursal Sur,P010,6,Producto 10,Bebidas
